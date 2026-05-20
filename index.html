@@ -26,158 +26,67 @@
       .screen-overlay.hidden {
         display: none !important;
       }
-
-      .screen-overlay {
-        position: fixed !important;
-        inset: 0 !important;
-        z-index: 80 !important;
-        min-height: var(--app-height, 100vh) !important;
-        display: grid !important;
-        place-items: center !important;
-        padding: 22px !important;
-        background: linear-gradient(145deg, #081817, #11252a 52%, #211c1c) !important;
-      }
-
-      .mode-wrap {
-        width: min(820px, 100%) !important;
-      }
-
-      .mode-heading {
-        display: flex !important;
-        align-items: end !important;
-        justify-content: space-between !important;
-        gap: 16px !important;
-        margin-bottom: 18px !important;
-      }
-
-      .mode-heading h1 {
-        margin-bottom: 0 !important;
-      }
-
-      .logo-lockup {
-        width: clamp(220px, 38vh, 360px) !important;
-        margin: 0 0 10px !important;
-      }
-
-      .game-logo-art {
-        display: block !important;
-        width: 100% !important;
-        height: auto !important;
-        filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.45)) !important;
-      }
-
-      .mode-actions {
-        display: flex !important;
-        gap: 8px !important;
-      }
-
-      .fullscreen-button,
-      .release-button {
-        min-height: 44px !important;
-        padding: 0 16px !important;
-        border: 1px solid rgba(237, 189, 88, 0.45) !important;
-        border-radius: 8px !important;
-        background: rgba(237, 189, 88, 0.14) !important;
-        color: #f7f1e7 !important;
-        font-weight: 900 !important;
-      }
-
-      .floating-help-button {
-        position: fixed !important;
-        right: max(18px, env(safe-area-inset-right)) !important;
-        bottom: max(18px, env(safe-area-inset-bottom)) !important;
-        z-index: 90 !important;
-        width: 46px !important;
-        min-height: 46px !important;
-        padding: 0 !important;
-        border: 1px solid rgba(237, 189, 88, 0.52) !important;
-        border-radius: 999px !important;
-        background: rgba(20, 41, 39, 0.94) !important;
-        color: #f7f1e7 !important;
-        box-shadow: 0 16px 34px rgba(0, 0, 0, 0.34) !important;
-      }
-
-      .mode-grid {
-        display: grid !important;
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        gap: 12px !important;
-      }
-
-      .mode-card {
-        min-height: 160px !important;
-        padding: 18px !important;
-        border: 1px solid rgba(255, 255, 255, 0.16) !important;
-        border-radius: 8px !important;
-        display: grid !important;
-        align-content: end !important;
-        gap: 8px !important;
-        background: rgba(255, 255, 255, 0.09) !important;
-        color: #f7f1e7 !important;
-        text-align: left !important;
-      }
-
-      .mode-card.featured {
-        border-color: rgba(237, 189, 88, 0.55) !important;
-      }
-
-      @media (max-width: 620px) {
-        .mode-heading {
-          display: grid !important;
-          gap: 10px !important;
-        }
-
-        .mode-actions {
-          width: 100% !important;
-        }
-
-        .fullscreen-button,
-        .release-button {
-          flex: 1 !important;
-          width: 100% !important;
-        }
-
-        .floating-help-button {
-          width: 54px !important;
-          min-height: 54px !important;
-          font-size: 1.25rem !important;
-        }
-
-        .mode-grid {
-          grid-template-columns: 1fr !important;
-        }
-
-        .mode-card {
-          min-height: 128px !important;
-        }
-      }
     </style>
-    <link rel="stylesheet" href="styles.css?v=audio-embed-1">
+    <link rel="stylesheet" href="styles.css?v=online-start-1">
   </head>
   <body>
     <section id="modeScreen" class="screen-overlay mode-select" aria-labelledby="modeTitle">
+      <div class="menu-ambient" aria-hidden="true">
+        <span class="menu-orbit orbit-one"></span>
+        <span class="menu-orbit orbit-two"></span>
+        <span class="menu-card-shape menu-card-left"></span>
+        <span class="menu-card-shape menu-card-right"></span>
+        <span class="menu-chip chip-one"></span>
+        <span class="menu-chip chip-two"></span>
+        <span class="menu-spark spark-one"></span>
+        <span class="menu-spark spark-two"></span>
+        <span class="menu-spark spark-three"></span>
+        <span class="menu-spark spark-four"></span>
+        <span class="menu-spark spark-five"></span>
+        <span class="menu-spark spark-six"></span>
+      </div>
       <div class="mode-wrap">
-        <div class="mode-heading">
-          <div>
-            <div class="logo-lockup">
-              <img class="game-logo-art" src="assets/Brand/Trash_logo.png" alt="Trash Cards" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
-              <p class="game-logo game-logo-fallback" hidden>Trash Cards</p>
-            </div>
-            <h1 id="modeTitle">Choose your game</h1>
-          </div>
-          <div class="mode-actions">
-            <button class="release-button" type="button" data-release-button>Recent releases</button>
-            <button id="modeFullscreen" class="fullscreen-button" type="button">Open fullscreen</button>
-          </div>
+        <div class="mode-actions">
+          <button id="serverStatusButton" class="server-status checking" type="button" aria-label="Multiplayer server status" title="Checking multiplayer server">
+            <span class="server-dot" aria-hidden="true"></span>
+            <span id="serverStatusText">Checking server</span>
+          </button>
+          <button id="accountButton" class="menu-utility-button account-button" type="button">Account</button>
+          <button id="leaderboardButton" class="menu-utility-button" type="button">Leaderboard</button>
+          <button class="release-button menu-utility-button" type="button" data-release-button>Recent releases</button>
+          <button id="modeFullscreen" class="fullscreen-button menu-utility-button" type="button">Fullscreen</button>
         </div>
-        <div class="mode-grid">
-          <button class="mode-card" type="button" data-mode="classic">
-            <span>Classic Trash</span>
-            <strong>Classic race from 10 cards down to 1.</strong>
-          </button>
-          <button class="mode-card featured" type="button" data-mode="crown">
-            <span>Trash: Crown Debt</span>
-            <strong>Rounds, coins, a rarity shop, and one brutal comeback item.</strong>
-          </button>
+        <div class="mode-heading">
+          <div class="logo-lockup">
+            <img class="game-logo-art" src="assets/Brand/Trash_logo.png" alt="Trash Cards" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+            <p class="game-logo game-logo-fallback" hidden>Trash Cards</p>
+          </div>
+          <div class="mode-title-lockup">
+            <span class="title-rule"></span>
+            <h1 id="modeTitle">Select a Mode</h1>
+            <span class="title-rule"></span>
+          </div>
+          <p class="mode-subtitle">Two ways to play. All the chaos.</p>
+        </div>
+        <div class="main-menu-grid">
+          <article class="mode-choice-panel classic-panel">
+            <div class="mode-emblem classic-emblem" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <h2>Classic Trash</h2>
+            <p>Fast-paced classic mode. Race from 10 cards down to 1.</p>
+            <button class="mode-play-button classic-play" type="button" data-menu-mode="classic">Play</button>
+          </article>
+          <article class="mode-choice-panel crown-panel">
+            <div class="mode-emblem crown-emblem" aria-hidden="true"></div>
+            <h2>Crown Debt</h2>
+            <p>Rounds, coins, a rarity shop, and one brutal comeback item.</p>
+            <button class="mode-play-button crown-play" type="button" data-menu-mode="crown">Play</button>
+          </article>
+        </div>
+        <div class="corner-actions">
+          <button id="settingsButton" class="corner-button settings-corner" type="button"><span aria-hidden="true">⚙</span>Settings</button>
+          <button id="helpButton" class="corner-button help-corner" type="button" aria-label="How to play" title="How to play"><span aria-hidden="true">?</span>Help</button>
         </div>
       </div>
     </section>
@@ -200,7 +109,6 @@
           </div>
         </div>
         <div class="header-actions">
-          <button class="icon-button release-icon" type="button" data-release-button aria-label="Recent releases" title="Recent releases">v</button>
           <button id="musicButton" class="icon-button audio-button music-button" aria-label="Music off" title="Music off"><span aria-hidden="true">♪</span></button>
           <button id="sfxButton" class="icon-button audio-button sfx-button" aria-label="SFX off" title="SFX off"><span aria-hidden="true">✦</span></button>
           <button id="fullscreenButton" class="icon-button" aria-label="Fullscreen" title="Fullscreen">⛶</button>
@@ -255,6 +163,81 @@
       </section>
     </main>
 
+    <div id="playModal" class="modal hidden play-modal" role="dialog" aria-modal="true" aria-labelledby="playTitle">
+      <div class="modal-card play-card">
+        <p class="eyebrow">Play</p>
+        <h2 id="playTitle">Choose play type</h2>
+        <p id="playSummary">Online play can update leaderboards and levels. Offline play stays on this device.</p>
+
+        <div id="playTypePanel" class="choice-grid">
+          <button class="choice-card" type="button" data-play-type="offline">
+            <span>Offline Play</span>
+            <strong>Practice freely. No leaderboard or level progress.</strong>
+          </button>
+          <button class="choice-card featured" type="button" data-play-type="online">
+            <span>Online Play</span>
+            <strong>Requires an account and active server connection.</strong>
+          </button>
+        </div>
+
+        <div id="playModePanel" class="play-mode-panel" hidden>
+          <div id="onlineGate" class="online-gate" hidden>
+            <div class="profile-card">
+              <span>Online account</span>
+              <strong id="onlineAccountName">Not signed in</strong>
+              <small id="onlineGateText">Sign in to use online play, levels, and global leaderboards.</small>
+            </div>
+            <button id="onlineAuthButton" type="button">Sign in or create account</button>
+          </div>
+
+          <div id="playChosenWrap" class="chosen-mode-card" hidden>
+            <button id="playChosenButton" class="choice-card featured" type="button">
+              <span id="chosenModeTitle">Start Classic Trash</span>
+              <strong id="chosenModeSummary">Race from 10 cards down to 1.</strong>
+            </button>
+          </div>
+
+          <div id="onlineRoomPanel" class="online-room-panel" hidden>
+            <div class="online-room-actions">
+              <button id="createRoomButton" type="button">Create player room</button>
+              <label class="room-code-field">
+                <span>Join code</span>
+                <input id="joinRoomCode" type="text" inputmode="text" autocomplete="off" spellcheck="false" maxlength="12" placeholder="ABC123">
+              </label>
+              <button id="joinRoomButton" type="button">Join room</button>
+            </div>
+            <div id="roomLobby" class="room-lobby" hidden>
+              <div class="room-code-card">
+                <span>Room code</span>
+                <strong id="roomCodeText">------</strong>
+              </div>
+              <div id="roomPlayerList" class="room-player-list"></div>
+              <p id="roomStatusText" class="room-status-text">Waiting for another player.</p>
+              <div class="room-lobby-actions">
+                <button id="roomReadyButton" type="button">Ready</button>
+                <button id="roomLeaveButton" class="secondary-button" type="button">Leave room</button>
+              </div>
+            </div>
+            <p id="roomMessage" class="room-message" role="status"></p>
+          </div>
+
+          <div id="playModeChoices" class="choice-grid">
+            <button class="choice-card" type="button" data-start-mode="classic">
+              <span>Classic Trash</span>
+              <strong>Race from 10 cards down to 1.</strong>
+            </button>
+            <button class="choice-card featured" type="button" data-start-mode="crown">
+              <span>Trash: Crown Debt</span>
+              <strong>Rounds, coins, shop items, and comeback pressure.</strong>
+            </button>
+          </div>
+          <button id="playBack" type="button">Back to play type</button>
+        </div>
+
+        <button id="closePlay" type="button">Back</button>
+      </div>
+    </div>
+
     <div id="helpModal" class="modal hidden help-modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
       <div class="modal-card help-card">
         <p class="eyebrow">How to play</p>
@@ -286,6 +269,82 @@
         <h2 id="releaseTitle">Recent releases</h2>
         <div id="releaseList" class="release-list" aria-live="polite"></div>
         <button id="closeRelease" type="button">Back</button>
+      </div>
+    </div>
+
+    <div id="leaderboardModal" class="modal hidden leaderboard-modal" role="dialog" aria-modal="true" aria-labelledby="leaderboardTitle">
+      <div class="modal-card leaderboard-card">
+        <p class="eyebrow">Online</p>
+        <h2 id="leaderboardTitle">Global Leaderboard</h2>
+        <p>Only online matches count toward global ranking and level progress.</p>
+        <div class="leaderboard-tabs" role="tablist" aria-label="Leaderboard mode">
+          <button class="leaderboard-tab active" type="button" data-leaderboard-mode="crown">Crown Debt</button>
+          <button class="leaderboard-tab" type="button" data-leaderboard-mode="classic">Classic</button>
+        </div>
+        <div id="leaderboardStatus" class="leaderboard-status" role="status">Checking leaderboard...</div>
+        <div id="leaderboardList" class="leaderboard-list"></div>
+        <button id="closeLeaderboard" type="button">Back</button>
+      </div>
+    </div>
+
+    <div id="settingsModal" class="modal hidden settings-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="modal-card settings-card">
+        <p class="eyebrow">Settings</p>
+        <h2 id="settingsTitle">Settings</h2>
+        <div class="settings-list">
+          <button id="settingsMusic" type="button">Music</button>
+          <button id="settingsSfx" type="button">SFX</button>
+          <button id="settingsFullscreen" type="button">Fullscreen</button>
+          <button id="settingsPerformance" type="button">Performance mode</button>
+        </div>
+        <button id="closeSettings" type="button">Back</button>
+      </div>
+    </div>
+
+    <div id="authModal" class="modal hidden auth-modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <div class="modal-card auth-card">
+        <p class="eyebrow">Account</p>
+        <h2 id="authTitle">Sign in</h2>
+        <p id="authIntro">Sign in to save match results and get ready for online leaderboards.</p>
+
+        <form id="authForm" class="auth-form">
+          <div class="auth-tabs" role="tablist" aria-label="Account mode">
+            <button id="authLoginTab" class="auth-tab active" type="button">Sign in</button>
+            <button id="authSignupTab" class="auth-tab" type="button">Create account</button>
+          </div>
+          <label class="auth-field">
+            <span>Username</span>
+            <input id="authUsername" name="username" type="text" autocomplete="username" minlength="3" maxlength="20" placeholder="player_name" required>
+          </label>
+          <label class="auth-field">
+            <span>Password</span>
+            <input id="authPassword" name="password" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="8+ characters" required>
+          </label>
+          <button id="authSubmit" type="submit">Sign in</button>
+          <p id="authMessage" class="auth-message" role="status"></p>
+        </form>
+
+        <div id="authProfile" class="auth-profile" hidden>
+          <div class="account-hero-card">
+            <div>
+              <span>Signed in as</span>
+              <strong id="authProfileName">Player</strong>
+              <small id="authAccountMeta">Online account</small>
+            </div>
+            <div class="account-server-pill" id="authServerPill">Server online</div>
+          </div>
+          <div id="authSummary" class="account-summary-grid"></div>
+          <h3>Account info</h3>
+          <div id="authAccountInfo" class="account-info-grid"></div>
+          <h3>Online stats</h3>
+          <div id="authProfileStats" class="profile-stats"></div>
+          <div class="account-actions">
+            <button id="authRefresh" type="button">Refresh account</button>
+            <button id="authLogout" class="secondary-button danger-button" type="button">Sign out</button>
+          </div>
+        </div>
+
+        <button id="closeAuth" type="button">Back</button>
       </div>
     </div>
 
@@ -325,9 +384,7 @@
       </div>
     </div>
 
-    <button id="helpButton" class="floating-help-button" type="button" aria-label="How to play" title="How to play">?</button>
-
     <script src="assets/audio/music/playlist.js"></script>
-    <script src="game.js?v=card-pitch-1"></script>
+    <script src="game.js?v=online-start-1"></script>
   </body>
 </html>

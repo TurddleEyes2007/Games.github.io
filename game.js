@@ -109,13 +109,14 @@
   const SFX_POOL_SIZE = 4;
   const PITCHED_SFX = new Set(["draw", "place", "discard"]);
   const CARD_SFX_PITCH_VARIANCE = 0.045;
-  const RELEASES_URL = "https://api.github.com/repos/TurddleEyes/trash/releases?per_page=6";
+  const PUBLIC_API_BASE = "https://trash-cards-api.chaseshaffer07.workers.dev";
+  const AUTH_STORAGE_KEY = "trashCardsAuth";
+  const PERFORMANCE_STORAGE_KEY = "trashCardsPerformanceMode";
   const RELEASE_FALLBACKS = [
     {
       name: "v0.2.7 - Subtle Card Pitch Variety",
       tag_name: "v0.2.7",
       published_at: "2026-05-14T00:00:00Z",
-      html_url: "https://github.com/TurddleEyes/trash/releases/tag/v0.2.7",
       body: [
         "## Highlights",
         "- Added subtle random pitch variation to card draw, place, and discard sounds.",
@@ -127,7 +128,6 @@
       name: "v0.2.6 - Faster SFX and Link Previews",
       tag_name: "v0.2.6",
       published_at: "2026-05-14T00:00:00Z",
-      html_url: "https://github.com/TurddleEyes/trash/releases/tag/v0.2.6",
       body: [
         "## Highlights",
         "- Warmed up sound effects after the first tap so card sounds respond faster after quiet moments.",
@@ -140,21 +140,19 @@
       name: "v0.2.5 - In-Game Release Notes",
       tag_name: "v0.2.5",
       published_at: "2026-05-12T00:00:00Z",
-      html_url: "https://github.com/TurddleEyes/trash/releases/tag/v0.2.5",
       body: [
         "## Highlights",
         "- Moved the how-to-play question button into a floating bottom-right control.",
         "- Added a Recent releases button to the main menu.",
         "- Added a top-right version button in the game header.",
-        "- Added an in-game release notes modal that loads GitHub Releases when online.",
-        "- Added built-in fallback notes so local and offline browser play still shows recent updates."
+        "- Added an in-game release notes modal for recent update summaries.",
+        "- Kept release notes built into the game so local and offline browser play still shows recent updates."
       ].join("\n")
     },
     {
       name: "v0.2.4 - Casino Table Layout",
       tag_name: "v0.2.4",
       published_at: "2026-05-12T00:00:00Z",
-      html_url: "https://github.com/TurddleEyes/trash/releases/tag/v0.2.4",
       body: [
         "## Highlights",
         "- Added the first CSS-only casino table pass with warmer felt, rail depth, card depth, and cleaner card shadows.",
@@ -167,7 +165,6 @@
       name: "v0.2.3 - Lock Card Placement",
       tag_name: "v0.2.3",
       published_at: "2026-05-11T00:00:00Z",
-      html_url: "https://github.com/TurddleEyes/trash/releases/tag/v0.2.3",
       body: [
         "## Highlights",
         "- Locked card placement to the active player.",
@@ -179,7 +176,6 @@
       name: "v0.2.2 - Current Card Tray",
       tag_name: "v0.2.2",
       published_at: "2026-05-10T00:00:00Z",
-      html_url: "https://github.com/TurddleEyes/trash/releases/tag/v0.2.2",
       body: [
         "## Highlights",
         "- Gave the current card a permanent home.",
@@ -196,6 +192,70 @@
     sfxButton: document.getElementById("sfxButton"),
     modeFullscreen: document.getElementById("modeFullscreen"),
     fullscreenButton: document.getElementById("fullscreenButton"),
+    serverStatusButton: document.getElementById("serverStatusButton"),
+    serverStatusText: document.getElementById("serverStatusText"),
+    menuModeButtons: document.querySelectorAll("[data-menu-mode]"),
+    playModal: document.getElementById("playModal"),
+    playTitle: document.getElementById("playTitle"),
+    playSummary: document.getElementById("playSummary"),
+    playTypePanel: document.getElementById("playTypePanel"),
+    playModePanel: document.getElementById("playModePanel"),
+    playChosenWrap: document.getElementById("playChosenWrap"),
+    playChosenButton: document.getElementById("playChosenButton"),
+    chosenModeTitle: document.getElementById("chosenModeTitle"),
+    chosenModeSummary: document.getElementById("chosenModeSummary"),
+    onlineRoomPanel: document.getElementById("onlineRoomPanel"),
+    createRoomButton: document.getElementById("createRoomButton"),
+    joinRoomCode: document.getElementById("joinRoomCode"),
+    joinRoomButton: document.getElementById("joinRoomButton"),
+    roomLobby: document.getElementById("roomLobby"),
+    roomCodeText: document.getElementById("roomCodeText"),
+    roomPlayerList: document.getElementById("roomPlayerList"),
+    roomStatusText: document.getElementById("roomStatusText"),
+    roomReadyButton: document.getElementById("roomReadyButton"),
+    roomLeaveButton: document.getElementById("roomLeaveButton"),
+    roomMessage: document.getElementById("roomMessage"),
+    playModeChoices: document.getElementById("playModeChoices"),
+    onlineGate: document.getElementById("onlineGate"),
+    onlineAccountName: document.getElementById("onlineAccountName"),
+    onlineGateText: document.getElementById("onlineGateText"),
+    onlineAuthButton: document.getElementById("onlineAuthButton"),
+    playBack: document.getElementById("playBack"),
+    closePlay: document.getElementById("closePlay"),
+    leaderboardButton: document.getElementById("leaderboardButton"),
+    leaderboardModal: document.getElementById("leaderboardModal"),
+    leaderboardStatus: document.getElementById("leaderboardStatus"),
+    leaderboardList: document.getElementById("leaderboardList"),
+    leaderboardTabs: document.querySelectorAll("[data-leaderboard-mode]"),
+    closeLeaderboard: document.getElementById("closeLeaderboard"),
+    settingsButton: document.getElementById("settingsButton"),
+    settingsModal: document.getElementById("settingsModal"),
+    settingsMusic: document.getElementById("settingsMusic"),
+    settingsSfx: document.getElementById("settingsSfx"),
+    settingsFullscreen: document.getElementById("settingsFullscreen"),
+    settingsPerformance: document.getElementById("settingsPerformance"),
+    closeSettings: document.getElementById("closeSettings"),
+    accountButton: document.getElementById("accountButton"),
+    authModal: document.getElementById("authModal"),
+    authTitle: document.getElementById("authTitle"),
+    authIntro: document.getElementById("authIntro"),
+    authForm: document.getElementById("authForm"),
+    authLoginTab: document.getElementById("authLoginTab"),
+    authSignupTab: document.getElementById("authSignupTab"),
+    authUsername: document.getElementById("authUsername"),
+    authPassword: document.getElementById("authPassword"),
+    authSubmit: document.getElementById("authSubmit"),
+    authMessage: document.getElementById("authMessage"),
+    authProfile: document.getElementById("authProfile"),
+    authProfileName: document.getElementById("authProfileName"),
+    authAccountMeta: document.getElementById("authAccountMeta"),
+    authServerPill: document.getElementById("authServerPill"),
+    authSummary: document.getElementById("authSummary"),
+    authAccountInfo: document.getElementById("authAccountInfo"),
+    authProfileStats: document.getElementById("authProfileStats"),
+    authRefresh: document.getElementById("authRefresh"),
+    authLogout: document.getElementById("authLogout"),
+    closeAuth: document.getElementById("closeAuth"),
     helpButton: document.getElementById("helpButton"),
     helpModal: document.getElementById("helpModal"),
     closeHelp: document.getElementById("closeHelp"),
@@ -207,6 +267,8 @@
     coinStrip: document.getElementById("coinStrip"),
     botGrid: document.getElementById("botGrid"),
     humanGrid: document.getElementById("humanGrid"),
+    botName: document.querySelector(".player-panel.opponent .player-line span"),
+    humanName: document.querySelector(".player-panel.human .player-line span"),
     botCoins: document.getElementById("botCoins"),
     humanCoins: document.getElementById("humanCoins"),
     botCoinPop: document.getElementById("botCoinPop"),
@@ -246,6 +308,33 @@
   let modalAction = null;
   let fallbackFullscreen = false;
   let releasesLoaded = false;
+  let selectedPlayType = "offline";
+  let selectedMenuMode = "";
+  let leaderboardMode = "crown";
+  const authState = {
+    mode: "login",
+    token: "",
+    expiresAt: "",
+    user: null,
+    busy: false,
+    message: "",
+    messageType: ""
+  };
+  const serverState = {
+    status: "checking",
+    label: "Checking server",
+    detail: "Checking multiplayer server status."
+  };
+  const roomState = {
+    room: null,
+    mode: "",
+    ready: false,
+    busy: false,
+    message: "",
+    messageType: ""
+  };
+  let roomSocket = null;
+  let onlineActionCounter = 0;
   const audioState = {
     musicEnabled: false,
     sfxEnabled: false,
@@ -270,6 +359,943 @@
   } catch (error) {
     audioState.musicEnabled = false;
     audioState.sfxEnabled = false;
+  }
+
+  function enablePerformanceMode() {
+    const preference = getPerformancePreference();
+    const lowCoreCount = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
+    const lowMemory = navigator.deviceMemory && navigator.deviceMemory <= 4;
+    const mobileViewport = window.matchMedia("(max-width: 760px), (pointer: coarse)").matches;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const shouldEnable = preference === "on" || (preference === "auto" && Boolean(lowCoreCount || lowMemory || mobileViewport || reducedMotion));
+    document.body.classList.toggle("performance-mode", shouldEnable);
+  }
+
+  function getPerformancePreference() {
+    try {
+      const saved = localStorage.getItem(PERFORMANCE_STORAGE_KEY);
+      return ["auto", "on", "off"].includes(saved) ? saved : "auto";
+    } catch (error) {
+      return "auto";
+    }
+  }
+
+  function setPerformancePreference(value) {
+    try {
+      localStorage.setItem(PERFORMANCE_STORAGE_KEY, value);
+    } catch (error) {
+      // Ignore storage failure; the current session can still update the body class below.
+    }
+    enablePerformanceMode();
+  }
+
+  function getApiBase() {
+    return PUBLIC_API_BASE;
+  }
+
+  function loadSavedAuth() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || "null");
+      if (saved && saved.token && saved.user) {
+        authState.token = saved.token;
+        authState.expiresAt = saved.expiresAt || "";
+        authState.user = saved.user;
+      }
+    } catch (error) {
+      clearAuthSession(false);
+    }
+
+    renderAuthUi();
+    if (authState.token) {
+      refreshAuthProfile(true);
+    }
+  }
+
+  function persistAuthSession() {
+    try {
+      if (!authState.token || !authState.user) {
+        localStorage.removeItem(AUTH_STORAGE_KEY);
+        return;
+      }
+
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({
+        token: authState.token,
+        expiresAt: authState.expiresAt,
+        user: authState.user
+      }));
+    } catch (error) {
+      // A failed save should not block local play.
+    }
+  }
+
+  function setAuthSession(data) {
+    authState.token = data.token || "";
+    authState.expiresAt = data.expiresAt || "";
+    authState.user = data.user || null;
+    authState.message = authState.user ? `Signed in as ${authState.user.username}.` : "";
+    authState.messageType = "";
+    persistAuthSession();
+    renderAuthUi();
+    refreshOpenMenuState();
+  }
+
+  function clearAuthSession(render = true) {
+    closeRoomSocket();
+    authState.token = "";
+    authState.expiresAt = "";
+    authState.user = null;
+    authState.message = "";
+    authState.messageType = "";
+    persistAuthSession();
+    if (render) {
+      renderAuthUi();
+      renderAuthModal();
+      refreshOpenMenuState();
+    }
+  }
+
+  async function apiRequest(path, options = {}) {
+    const base = getApiBase();
+    const headers = {
+      Accept: "application/json",
+      ...(options.headers || {})
+    };
+
+    if (options.body !== undefined) {
+      headers["Content-Type"] = "application/json";
+    }
+
+    if (options.auth !== false && authState.token) {
+      headers.Authorization = `Bearer ${authState.token}`;
+    }
+
+    let response;
+    try {
+      response = await fetch(`${base}${path}`, {
+        method: options.method || "GET",
+        headers,
+        body: options.body === undefined ? undefined : JSON.stringify(options.body)
+      });
+    } catch (error) {
+      throw new Error("Account server is not reachable. Online features are unavailable right now.");
+    }
+
+    const text = await response.text();
+    let data = {};
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch (error) {
+        data = {};
+      }
+    }
+
+    if (!response.ok) {
+      const error = new Error(data.error || `Server returned ${response.status}.`);
+      error.status = response.status;
+      throw error;
+    }
+
+    return data;
+  }
+
+  function renderServerStatus() {
+    if (!els.serverStatusButton || !els.serverStatusText) return;
+
+    els.serverStatusButton.classList.toggle("checking", serverState.status === "checking");
+    els.serverStatusButton.classList.toggle("online", serverState.status === "online");
+    els.serverStatusButton.classList.toggle("offline", serverState.status === "offline");
+    els.serverStatusText.textContent = serverState.label;
+    els.serverStatusButton.title = serverState.detail;
+    if (els.authModal && !els.authModal.classList.contains("hidden") && authState.user) {
+      renderAuthModal();
+    }
+    refreshOpenMenuState();
+  }
+
+  async function checkServerStatus() {
+    if (!els.serverStatusButton) return;
+
+    if (navigator.onLine === false) {
+      serverState.status = "offline";
+      serverState.label = "Browser offline";
+      serverState.detail = "Your browser says this device is offline.";
+      renderServerStatus();
+      return;
+    }
+
+    serverState.status = "checking";
+    serverState.label = "Checking server";
+    serverState.detail = "Checking multiplayer server status.";
+    renderServerStatus();
+
+    try {
+      const status = await apiRequest("/api/status", { auth: false });
+      const multiplayerOnline = Boolean(status.ok && status.multiplayer && status.multiplayer.online !== false);
+
+      serverState.status = multiplayerOnline ? "online" : "offline";
+      serverState.label = multiplayerOnline ? "Servers online" : "Servers limited";
+      serverState.detail = multiplayerOnline
+        ? "Online multiplayer services are reachable."
+        : "The online service answered, but multiplayer is not reporting ready.";
+    } catch (error) {
+      serverState.status = "offline";
+      serverState.label = "Servers offline";
+      serverState.detail = error.message || "Multiplayer server is not reachable.";
+    }
+
+    renderServerStatus();
+  }
+
+  function modeLabel(mode) {
+    return mode === "crown" ? "Crown Debt" : "Classic Trash";
+  }
+
+  function modeSummary(mode) {
+    return mode === "crown"
+      ? "Rounds, coins, a rarity shop, and one brutal comeback item."
+      : "Race from 10 cards down to 1.";
+  }
+
+  function showPlayMenu(mode = "") {
+    selectedMenuMode = mode;
+    selectedPlayType = "offline";
+    hideAllModals();
+    renderPlayMenu("type");
+    els.playModal.classList.remove("hidden");
+  }
+
+  function renderPlayMenu(step = "type") {
+    const pickingType = step === "type";
+    els.playTypePanel.hidden = !pickingType;
+    els.playModePanel.hidden = pickingType;
+
+    if (pickingType) {
+      els.playTitle.textContent = selectedMenuMode ? `Play ${modeLabel(selectedMenuMode)}` : "Choose play type";
+      els.playSummary.textContent = selectedMenuMode
+        ? "Online is player-vs-player rooms. Offline is for local bot games."
+        : "Online play can update leaderboards and levels. Offline play stays on this device.";
+      return;
+    }
+
+    const online = selectedPlayType === "online";
+    const signedIn = Boolean(authState.user && authState.token);
+    const serverOnline = serverState.status === "online";
+    els.playTitle.textContent = selectedMenuMode
+      ? `${online ? "Online" : "Offline"} ${modeLabel(selectedMenuMode)}`
+      : online ? "Online play" : "Offline play";
+    els.playSummary.textContent = online
+      ? "Online play uses player rooms. Bot matches stay offline."
+      : "Offline matches are for practice and do not update levels or leaderboards.";
+    els.onlineGate.hidden = !online;
+    els.onlineRoomPanel.hidden = !online || !selectedMenuMode || !signedIn || !serverOnline;
+    els.playChosenWrap.hidden = !selectedMenuMode || online;
+    els.playModeChoices.hidden = Boolean(selectedMenuMode);
+    if (selectedMenuMode) {
+      els.chosenModeTitle.textContent = `Start ${modeLabel(selectedMenuMode)}`;
+      els.chosenModeSummary.textContent = modeSummary(selectedMenuMode);
+      els.playChosenButton.disabled = online;
+    }
+    document.querySelectorAll("[data-start-mode]").forEach((button) => {
+      button.disabled = online && (!signedIn || !serverOnline);
+    });
+
+    if (online) {
+      els.onlineAccountName.textContent = signedIn ? authState.user.username : "Not signed in";
+      els.onlineGateText.textContent = serverOnline
+        ? signedIn
+          ? "Create a room or join a friend's code. Online games require a real player."
+          : "Sign in to use online player rooms, levels, and global leaderboards."
+        : "Online play is unavailable while the multiplayer server is offline.";
+      els.onlineAuthButton.hidden = signedIn;
+    }
+    renderRoomUi();
+  }
+
+  function choosePlayType(type) {
+    selectedPlayType = type;
+    if (type !== "online") {
+      closeRoomSocket();
+    }
+    renderPlayMenu("mode");
+  }
+
+  function startSelectedMode(mode) {
+    const modeToStart = mode || selectedMenuMode || "classic";
+    if (selectedPlayType === "online" && (!authState.token || !authState.user || serverState.status !== "online")) {
+      renderPlayMenu("mode");
+      return;
+    }
+
+    if (selectedPlayType === "online") {
+      selectedMenuMode = modeToStart;
+      roomState.mode = modeToStart;
+      renderPlayMenu("mode");
+      return;
+    }
+
+    startMatch(modeToStart, selectedPlayType);
+  }
+
+  function normalizeRoomCode(value) {
+    return String(value || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12);
+  }
+
+  function setRoomMessage(message, type = "") {
+    roomState.message = message;
+    roomState.messageType = type;
+    renderRoomUi();
+  }
+
+  function roomSocketIsOpen() {
+    return roomSocket && roomSocket.readyState === WebSocket.OPEN;
+  }
+
+  function roomSocketUrl(code) {
+    const base = new URL(getApiBase());
+    base.protocol = base.protocol === "https:" ? "wss:" : "ws:";
+    base.pathname = `${base.pathname.replace(/\/+$/, "")}/api/rooms/${code}/socket`;
+    base.search = "";
+    base.searchParams.set("token", authState.token);
+    return base.toString();
+  }
+
+  function closeRoomSocket(clearRoom = true) {
+    if (roomSocket) {
+      roomSocket.onopen = null;
+      roomSocket.onmessage = null;
+      roomSocket.onerror = null;
+      roomSocket.onclose = null;
+      roomSocket.close();
+      roomSocket = null;
+    }
+
+    if (clearRoom) {
+      roomState.room = null;
+      roomState.ready = false;
+      roomState.message = "";
+      roomState.messageType = "";
+      renderRoomUi();
+    }
+  }
+
+  function renderRoomUi() {
+    if (!els.onlineRoomPanel) return;
+
+    const signedIn = Boolean(authState.user && authState.token);
+    const canUseRooms = signedIn && serverState.status === "online" && !roomState.busy;
+    const hasRoom = Boolean(roomState.room);
+
+    els.onlineRoomPanel.hidden = selectedPlayType !== "online" || !selectedMenuMode || !signedIn || serverState.status !== "online";
+    els.createRoomButton.disabled = !canUseRooms || hasRoom;
+    els.joinRoomButton.disabled = !canUseRooms || hasRoom;
+    els.joinRoomCode.disabled = !canUseRooms || hasRoom;
+    els.roomLobby.hidden = !hasRoom;
+    els.roomMessage.textContent = roomState.message;
+    els.roomMessage.classList.toggle("error", roomState.messageType === "error");
+    els.roomMessage.classList.toggle("success", roomState.messageType === "success");
+
+    if (!hasRoom) return;
+
+    const room = roomState.room;
+    const players = room.players || [];
+    els.roomCodeText.textContent = room.code || "------";
+    els.roomPlayerList.replaceChildren(...[0, 1].map((index) => {
+      const player = players[index];
+      const row = document.createElement("div");
+      const label = document.createElement("span");
+      const name = document.createElement("strong");
+      label.textContent = index === 0 ? "Player 1" : "Player 2";
+      name.textContent = player ? `${player.username}${player.ready ? " - ready" : ""}` : "Waiting";
+      row.append(label, name);
+      return row;
+    }));
+
+    if (room.status === "active") {
+      els.roomStatusText.textContent = "Both players are ready. Starting the player match...";
+    } else if (players.length < 2) {
+      els.roomStatusText.textContent = "Share this code with another player, then both players can ready up.";
+    } else {
+      els.roomStatusText.textContent = "Both players are connected. Press Ready when you are set.";
+    }
+
+    els.roomReadyButton.disabled = !roomSocketIsOpen();
+    els.roomReadyButton.textContent = roomState.ready ? "Unready" : "Ready";
+  }
+
+  async function createOnlineRoom() {
+    if (!selectedMenuMode || roomState.busy) return;
+
+    roomState.busy = true;
+    roomState.mode = selectedMenuMode;
+    setRoomMessage("Creating player room...");
+
+    try {
+      const data = await apiRequest("/api/rooms", {
+        method: "POST",
+        body: { mode: selectedMenuMode }
+      });
+      connectOnlineRoom(data.room);
+    } catch (error) {
+      roomState.busy = false;
+      setRoomMessage(error.message || "Could not create room.", "error");
+    }
+  }
+
+  async function joinOnlineRoom() {
+    const code = normalizeRoomCode(els.joinRoomCode.value);
+    if (!code || roomState.busy) {
+      setRoomMessage("Enter a room code first.", "error");
+      return;
+    }
+
+    roomState.busy = true;
+    setRoomMessage(`Joining room ${code}...`);
+
+    try {
+      const data = await apiRequest(`/api/rooms/${encodeURIComponent(code)}`, { auth: false });
+      selectedMenuMode = data.room?.mode || selectedMenuMode || "classic";
+      roomState.mode = selectedMenuMode;
+      connectOnlineRoom(data.room);
+    } catch (error) {
+      roomState.busy = false;
+      setRoomMessage(error.message || "Could not join room.", "error");
+    }
+  }
+
+  function connectOnlineRoom(room) {
+    const code = normalizeRoomCode(room?.code);
+    if (!code) {
+      roomState.busy = false;
+      setRoomMessage("Room did not return a valid code.", "error");
+      return;
+    }
+
+    closeRoomSocket(false);
+    roomState.room = room;
+    roomState.ready = false;
+    renderPlayMenu("mode");
+    maybeStartOnlineMatch(room);
+
+    roomSocket = new WebSocket(roomSocketUrl(code));
+    roomSocket.addEventListener("open", () => {
+      roomState.busy = false;
+      setRoomMessage(`Connected to room ${code}.`, "success");
+    });
+    roomSocket.addEventListener("message", (event) => {
+      let payload = null;
+      try {
+        payload = JSON.parse(event.data);
+      } catch (error) {
+        return;
+      }
+
+      if (payload.type === "room") {
+        roomState.room = payload.room;
+        renderRoomUi();
+        maybeStartOnlineMatch(payload.room);
+      } else if (payload.type === "action") {
+        applyOnlineAction(payload);
+      } else if (payload.type === "error") {
+        setRoomMessage(payload.error || "Room error.", "error");
+      }
+    });
+    roomSocket.addEventListener("error", () => {
+      roomState.busy = false;
+      setRoomMessage("Room connection failed.", "error");
+    });
+    roomSocket.addEventListener("close", () => {
+      roomSocket = null;
+      roomState.ready = false;
+      if (roomState.room) {
+        setRoomMessage("Disconnected from room.", "error");
+      }
+    });
+  }
+
+  function toggleRoomReady() {
+    if (!roomSocketIsOpen()) return;
+    roomState.ready = !roomState.ready;
+    roomSocket.send(JSON.stringify({ type: "ready", ready: roomState.ready }));
+    renderRoomUi();
+  }
+
+  function maybeStartOnlineMatch(room) {
+    if (!room || room.status !== "active" || !authState.user) return;
+    if (state && state.online && state.onlineRoom && state.onlineRoom.code === room.code) return;
+    startOnlineMatch(room);
+  }
+
+  function startOnlineMatch(room) {
+    const players = Array.isArray(room.players) ? room.players.filter((player) => player && player.userId) : [];
+    const localSeat = players.findIndex((player) => player.userId === authState.user.id);
+    if (localSeat < 0 || players.length < 2) return;
+
+    const opponentSeat = localSeat === 0 ? 1 : 0;
+    const localPlayer = players[localSeat];
+    const opponentPlayer = players[opponentSeat];
+    const mode = room.mode || roomState.mode || selectedMenuMode || "classic";
+
+    unlockAudio();
+    state = {
+      mode,
+      playType: "online",
+      online: true,
+      onlineRoom: {
+        code: room.code,
+        startedAt: room.startedAt || room.createdAt || "",
+        localSeat,
+        opponentSeat,
+        localUserId: localPlayer.userId,
+        opponentUserId: opponentPlayer.userId,
+        players,
+        processedActions: new Set()
+      },
+      round: 1,
+      deck: [],
+      discard: [],
+      held: null,
+      turn: human,
+      phase: "draw",
+      over: false,
+      drawSource: null,
+      turnPlacements: 0,
+      matchStartedAt: Date.now(),
+      pendingItem: null,
+      pendingPurchase: null,
+      shopOffers: [],
+      shopLocked: false,
+      recycleCount: 0,
+      players: [createPlayer(localPlayer.username || "You"), createPlayer(opponentPlayer.username || "Opponent")]
+    };
+    state.players[human].seatIndex = localSeat;
+    state.players[bot].seatIndex = opponentSeat;
+    selectedPlayType = "online";
+    selectedMenuMode = mode;
+    roomState.busy = false;
+
+    els.modeScreen.classList.add("hidden");
+    els.gameShell.classList.remove("hidden");
+    setAppHeight();
+    hideAllModals();
+    playMusic();
+    startRound();
+  }
+
+  function onlineActorIndex(userId) {
+    if (!state || !state.onlineRoom || !userId) return null;
+    if (userId === state.onlineRoom.localUserId) return human;
+    if (userId === state.onlineRoom.opponentUserId) return bot;
+    return null;
+  }
+
+  function sendOnlineAction(actionType, payload = {}) {
+    if (!state || !state.online || !roomSocketIsOpen()) return;
+    const actionId = `${authState.user?.id || "player"}:${Date.now()}:${onlineActionCounter += 1}`;
+    state.onlineRoom?.processedActions?.add(actionId);
+    roomSocket.send(JSON.stringify({
+      type: "action",
+      actionType,
+      payload: {
+        ...payload,
+        actionId
+      }
+    }));
+  }
+
+  function applyOnlineAction(message) {
+    if (!state || !state.online || !message || !message.payload) return;
+    const actionId = message.payload.actionId || `${message.userId || "unknown"}:${message.sequence || 0}`;
+    const processed = state.onlineRoom?.processedActions;
+    if (processed && processed.has(actionId)) return;
+    if (processed) processed.add(actionId);
+
+    const actorIndex = onlineActorIndex(message.userId);
+    if (actorIndex === null || actorIndex === human) return;
+
+    if (message.actionType === "draw") {
+      const source = message.payload.source === "discard" ? "discard" : "deck";
+      const sourceRect = source === "discard" ? els.discardPile.getBoundingClientRect() : els.deckPile.getBoundingClientRect();
+      drawFrom(source, sourceRect, actorIndex, false);
+      setStatus(`${state.players[actorIndex].name} drew a card.`);
+      return;
+    }
+
+    if (message.actionType === "place") {
+      placeHeld(Number(message.payload.index), currentRect(), actorIndex, false);
+      if (!state.over) setStatus(`${state.players[actorIndex].name} is playing.`);
+      return;
+    }
+
+    if (message.actionType === "discard") {
+      discardHeld(actorIndex, currentRect(), els.discardPile.getBoundingClientRect());
+      finishOnlineTurn(actorIndex);
+    }
+  }
+
+  function showLeaderboard() {
+    hideAllModals();
+    els.leaderboardModal.classList.remove("hidden");
+    loadLeaderboard(leaderboardMode);
+  }
+
+  async function loadLeaderboard(mode = leaderboardMode) {
+    leaderboardMode = mode;
+    els.leaderboardTabs.forEach((button) => {
+      button.classList.toggle("active", button.dataset.leaderboardMode === mode);
+    });
+    els.leaderboardStatus.textContent = "Loading leaderboard...";
+    els.leaderboardList.replaceChildren();
+
+    if (serverState.status !== "online") {
+      els.leaderboardStatus.textContent = "Global leaderboard is only available when online servers are reachable.";
+      return;
+    }
+
+    try {
+      const data = await apiRequest(`/api/leaderboard?mode=${encodeURIComponent(mode)}&limit=10`, { auth: false });
+      renderLeaderboard(data.leaderboard || []);
+    } catch (error) {
+      els.leaderboardStatus.textContent = error.message || "Could not load leaderboard.";
+    }
+  }
+
+  function renderLeaderboard(rows) {
+    if (!rows.length) {
+      els.leaderboardStatus.textContent = "No online scores yet.";
+      return;
+    }
+
+    els.leaderboardStatus.textContent = "";
+    els.leaderboardList.replaceChildren(...rows.map((row) => {
+      const item = document.createElement("div");
+      item.className = "leaderboard-row";
+
+      const rank = document.createElement("span");
+      rank.className = "leaderboard-rank";
+      rank.textContent = `#${row.rank}`;
+
+      const name = document.createElement("span");
+      name.className = "leaderboard-name";
+      name.textContent = row.username || "Player";
+
+      const meta = document.createElement("span");
+      meta.className = "leaderboard-meta";
+      meta.textContent = `Lv ${playerLevel(row.stats)} - ${row.stats?.wins || 0}W - ${row.stats?.coins || 0}c`;
+
+      item.append(rank, name, meta);
+      return item;
+    }));
+  }
+
+  function playerLevel(stats = {}) {
+    const xp = (stats.wins || 0) * 100 + (stats.matches || 0) * 20 + (stats.coins || 0);
+    return Math.max(1, Math.floor(xp / 120) + 1);
+  }
+
+  function showSettings() {
+    hideAllModals();
+    renderSettings();
+    els.settingsModal.classList.remove("hidden");
+  }
+
+  function renderSettings() {
+    els.settingsMusic.textContent = `Music: ${audioState.musicEnabled ? "On" : "Off"}`;
+    els.settingsSfx.textContent = `SFX: ${audioState.sfxEnabled ? "On" : "Off"}`;
+    els.settingsFullscreen.textContent = fullscreenElement() || fallbackFullscreen ? "Exit fullscreen" : "Open fullscreen";
+    if (els.settingsPerformance) {
+      const preference = getPerformancePreference();
+      const active = document.body.classList.contains("performance-mode");
+      els.settingsPerformance.textContent = `Performance: ${preference === "auto" ? `Auto (${active ? "On" : "Off"})` : preference === "on" ? "On" : "Off"}`;
+    }
+  }
+
+  function cyclePerformanceMode() {
+    const current = getPerformancePreference();
+    const next = current === "auto" ? "on" : current === "on" ? "off" : "auto";
+    setPerformancePreference(next);
+    renderSettings();
+  }
+
+  function refreshOpenMenuState() {
+    if (els.playModal && !els.playModal.classList.contains("hidden") && !els.playModePanel.hidden) {
+      renderPlayMenu("mode");
+    }
+  }
+
+  function setAuthMode(mode) {
+    authState.mode = mode;
+    authState.message = "";
+    authState.messageType = "";
+    renderAuthModal();
+  }
+
+  function showAuth() {
+    hideAllModals();
+    renderAuthModal();
+    els.authModal.classList.remove("hidden");
+    if (!authState.user) {
+      window.setTimeout(() => els.authUsername.focus(), 80);
+    }
+  }
+
+  function renderAuthUi() {
+    if (!els.accountButton) return;
+
+    const signedIn = Boolean(authState.user);
+    const username = signedIn ? authState.user.username : "";
+    els.accountButton.classList.toggle("signed-in", signedIn);
+    els.accountButton.textContent = signedIn ? `Account: ${trimButtonLabel(username)}` : "Account";
+    els.accountButton.title = signedIn ? `Signed in as ${username}` : "Sign in or create account";
+  }
+
+  function renderAuthModal() {
+    if (!els.authModal) return;
+
+    const signedIn = Boolean(authState.user && authState.token);
+    els.authTitle.textContent = signedIn ? "Account" : authState.mode === "signup" ? "Create account" : "Sign in";
+    els.authIntro.textContent = signedIn
+      ? "Your account is ready for saved results, leaderboards, and multiplayer."
+      : "Sign in to save match results and get ready for online leaderboards.";
+    els.authForm.hidden = signedIn;
+    els.authProfile.hidden = !signedIn;
+    els.authLoginTab.classList.toggle("active", authState.mode === "login");
+    els.authSignupTab.classList.toggle("active", authState.mode === "signup");
+    els.authUsername.disabled = authState.busy;
+    els.authPassword.disabled = authState.busy;
+    els.authSubmit.disabled = authState.busy;
+    els.authSubmit.textContent = authState.busy
+      ? "Working..."
+      : authState.mode === "signup"
+        ? "Create account"
+        : "Sign in";
+    els.authPassword.autocomplete = authState.mode === "signup" ? "new-password" : "current-password";
+    els.authMessage.textContent = authState.message;
+    els.authMessage.classList.toggle("error", authState.messageType === "error");
+
+    if (signedIn) {
+      els.authProfileName.textContent = authState.user.username;
+      renderAccountPage();
+    }
+  }
+
+  function renderAccountPage() {
+    const stats = authState.user?.stats || {};
+    const total = combinedStats(stats);
+    const createdAt = formatDate(authState.user?.createdAt);
+    const lastLoginAt = formatDate(authState.user?.lastLoginAt);
+
+    els.authAccountMeta.textContent = `Player ID ${shortId(authState.user?.id)}${createdAt ? ` - Joined ${createdAt}` : ""}`;
+    els.authServerPill.textContent = serverState.status === "online" ? "Server online" : "Server offline";
+    els.authServerPill.classList.toggle("offline", serverState.status !== "online");
+    els.authSummary.replaceChildren(
+      accountSummaryCard("Level", playerLevel(total)),
+      accountSummaryCard("Matches", total.matches || 0),
+      accountSummaryCard("Wins", total.wins || 0),
+      accountSummaryCard("Win rate", `${winRate(total)}%`)
+    );
+    els.authAccountInfo.replaceChildren(
+      accountInfoRow("Username", authState.user?.username || "Player"),
+      accountInfoRow("Account ID", authState.user?.id || "Unknown"),
+      accountInfoRow("Created", createdAt || "Unknown"),
+      accountInfoRow("Last login", lastLoginAt || "Unknown")
+    );
+    els.authProfileStats.replaceChildren(
+      profileStatCard("Crown Debt", stats.crown),
+      profileStatCard("Classic", stats.classic)
+    );
+    if (els.authRefresh) {
+      els.authRefresh.disabled = authState.busy;
+      els.authRefresh.textContent = authState.busy ? "Refreshing..." : "Refresh account";
+    }
+  }
+
+  function combinedStats(stats = {}) {
+    const classic = stats.classic || {};
+    const crown = stats.crown || {};
+    return {
+      matches: (classic.matches || 0) + (crown.matches || 0),
+      wins: (classic.wins || 0) + (crown.wins || 0),
+      losses: (classic.losses || 0) + (crown.losses || 0),
+      coins: (classic.coins || 0) + (crown.coins || 0),
+      rounds: (classic.rounds || 0) + (crown.rounds || 0),
+      bestWinStreak: Math.max(classic.bestWinStreak || 0, crown.bestWinStreak || 0),
+      currentWinStreak: Math.max(classic.currentWinStreak || 0, crown.currentWinStreak || 0)
+    };
+  }
+
+  function winRate(stats = {}) {
+    const matches = stats.matches || 0;
+    return matches ? Math.round(((stats.wins || 0) / matches) * 100) : 0;
+  }
+
+  function formatDate(value) {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+  }
+
+  function shortId(value) {
+    return value ? String(value).slice(0, 8) : "unknown";
+  }
+
+  function accountSummaryCard(label, value) {
+    const card = document.createElement("div");
+    card.className = "account-summary-card";
+    const labelEl = document.createElement("span");
+    labelEl.textContent = label;
+    const valueEl = document.createElement("strong");
+    valueEl.textContent = value;
+    card.append(labelEl, valueEl);
+    return card;
+  }
+
+  function accountInfoRow(label, value) {
+    const row = document.createElement("div");
+    row.className = "account-info-row";
+    const labelEl = document.createElement("span");
+    labelEl.textContent = label;
+    const valueEl = document.createElement("strong");
+    valueEl.textContent = value;
+    row.append(labelEl, valueEl);
+    return row;
+  }
+
+  function profileStatCard(label, stats = {}) {
+    const card = document.createElement("div");
+    card.className = "profile-stat";
+
+    const title = document.createElement("span");
+    title.textContent = label;
+
+    const record = document.createElement("strong");
+    record.textContent = `Lv ${playerLevel(stats)} - ${stats.wins || 0}W / ${stats.losses || 0}L`;
+
+    const details = document.createElement("small");
+    details.textContent = `${stats.matches || 0} matches - ${stats.coins || 0}c - ${stats.rounds || 0} rounds - best streak ${stats.bestWinStreak || 0}`;
+
+    card.append(title, record, details);
+    return card;
+  }
+
+  function trimButtonLabel(value) {
+    return value.length > 12 ? `${value.slice(0, 12)}...` : value;
+  }
+
+  async function handleAuthSubmit(event) {
+    event.preventDefault();
+    if (authState.busy) return;
+
+    const username = els.authUsername.value.trim();
+    const password = els.authPassword.value;
+    authState.busy = true;
+    authState.message = "";
+    authState.messageType = "";
+    renderAuthModal();
+
+    try {
+      const endpoint = authState.mode === "signup" ? "/api/auth/register" : "/api/auth/login";
+      const data = await apiRequest(endpoint, {
+        method: "POST",
+        auth: false,
+        body: { username, password }
+      });
+      setAuthSession(data);
+      els.authPassword.value = "";
+    } catch (error) {
+      authState.message = error.message || "Account request failed.";
+      authState.messageType = "error";
+    } finally {
+      authState.busy = false;
+      renderAuthModal();
+    }
+  }
+
+  async function refreshAuthProfile(silent = false) {
+    if (!authState.token) return;
+
+    if (!silent) {
+      authState.busy = true;
+      authState.message = "Refreshing account...";
+      authState.messageType = "";
+      renderAuthModal();
+    }
+
+    try {
+      const data = await apiRequest("/api/me");
+      authState.user = data.user || authState.user;
+      if (!silent) {
+        authState.message = "Account is up to date.";
+        authState.messageType = "";
+      }
+      persistAuthSession();
+      renderAuthUi();
+      renderAuthModal();
+      refreshOpenMenuState();
+    } catch (error) {
+      if (error.status === 401) {
+        clearAuthSession();
+        return;
+      }
+
+      if (!silent) {
+        authState.message = error.message || "Could not refresh account.";
+        authState.messageType = "error";
+        renderAuthModal();
+      }
+    } finally {
+      if (!silent) {
+        authState.busy = false;
+        renderAuthModal();
+      }
+    }
+  }
+
+  async function logoutAuth() {
+    const hadToken = Boolean(authState.token);
+    if (hadToken) {
+      try {
+        await apiRequest("/api/auth/logout", { method: "POST" });
+      } catch (error) {
+        // Local logout should still work if the server is offline.
+      }
+    }
+
+    clearAuthSession();
+    authState.mode = "login";
+    authState.message = "Signed out.";
+    els.authPassword.value = "";
+    renderAuthModal();
+  }
+
+  async function submitMatchResult(winner) {
+    if (!state || !state.online || !authState.token) return;
+    if (state.players[bot]?.name === "Bot") return;
+
+    const payload = {
+      mode: isCrownMode() ? "crown" : "classic",
+      result: winner === human ? "win" : "loss",
+      coins: state.players[human].coins || 0,
+      rounds: state.round || 1,
+      opponentType: "player",
+      durationMs: Math.max(0, Date.now() - (state.matchStartedAt || Date.now()))
+    };
+
+    try {
+      const data = await apiRequest("/api/matches", {
+        method: "POST",
+        body: payload
+      });
+      authState.user ||= {};
+      authState.user.stats ||= {};
+      authState.user.stats[payload.mode] = data.stats;
+      persistAuthSession();
+      renderAuthUi();
+      refreshOpenMenuState();
+    } catch (error) {
+      console.warn("Could not submit match result.", error);
+    }
   }
 
   function setAppHeight() {
@@ -451,6 +1477,7 @@
   function syncAudioUi() {
     syncAudioButton(els.musicButton, "Music", audioState.musicEnabled);
     syncAudioButton(els.sfxButton, "SFX", audioState.sfxEnabled);
+    if (els.settingsModal && !els.settingsModal.classList.contains("hidden")) renderSettings();
   }
 
   function chooseMusicTrack() {
@@ -586,9 +1613,10 @@
     }
 
     if (els.modeFullscreen) {
-      els.modeFullscreen.textContent = active ? "Fullscreen on" : "Open fullscreen";
+      els.modeFullscreen.textContent = active ? "Exit fullscreen" : "Fullscreen";
     }
 
+    if (els.settingsModal && !els.settingsModal.classList.contains("hidden")) renderSettings();
     setAppHeight();
     window.setTimeout(setAppHeight, 90);
   }
@@ -653,10 +1681,19 @@
     };
   }
 
-  function startMatch(mode) {
+  function startMatch(mode, playType = "offline") {
+    if (playType === "online") {
+      selectedPlayType = "online";
+      selectedMenuMode = mode || selectedMenuMode || "classic";
+      renderPlayMenu("mode");
+      return;
+    }
+
     unlockAudio();
     state = {
       mode,
+      playType,
+      online: playType === "online",
       round: 1,
       deck: [],
       discard: [],
@@ -666,6 +1703,7 @@
       over: false,
       drawSource: null,
       turnPlacements: 0,
+      matchStartedAt: Date.now(),
       pendingItem: null,
       pendingPurchase: null,
       shopOffers: [],
@@ -681,30 +1719,38 @@
   }
 
   function startRound() {
-    const deck = makeDeck();
+    const deck = makeDeck(state && state.online ? seededRandom(onlineRoundSeed("deck")) : Math.random);
     state.deck = deck;
     state.discard = [];
     state.held = null;
-    state.turn = human;
+    state.turn = state.online ? playerIndexForSeat(0) : human;
     state.phase = "draw";
     state.over = false;
     state.drawSource = null;
     state.turnPlacements = 0;
     state.pendingItem = null;
+    state.recycleCount = 0;
     state.players.forEach((player) => {
-      player.slots = dealSlots(deck, player.targetSize);
+      player.slots = [];
       player.maxChain = 0;
       player.discardPlace = false;
       player.faceTrashed = false;
       player.itemUsedThisRound = false;
     });
+    if (state.online) {
+      dealOnlineSlots(deck);
+    } else {
+      state.players.forEach((player) => {
+        player.slots = dealSlots(deck, player.targetSize);
+      });
+    }
     state.discard.push(drawDeckCard());
     hideAllModals();
-    setStatus("Draw a card, then drag it to a slot or discard.");
+    setStatus(state.turn === human ? "Draw a card, then drag it to a slot or discard." : `${state.players[bot].name} starts. Waiting for their move.`);
     render();
   }
 
-  function makeDeck() {
+  function makeDeck(random = Math.random) {
     const deck = [];
     for (const suit of suits) {
       ranks.forEach((rank, index) => {
@@ -717,10 +1763,51 @@
       });
     }
     for (let i = deck.length - 1; i > 0; i -= 1) {
-      const j = Math.floor(Math.random() * (i + 1));
+      const j = Math.floor(random() * (i + 1));
       [deck[i], deck[j]] = [deck[j], deck[i]];
     }
     return deck;
+  }
+
+  function onlineRoundSeed(label) {
+    const room = state && state.onlineRoom;
+    return `${room?.code || "room"}:${room?.startedAt || "start"}:${state?.round || 1}:${label}`;
+  }
+
+  function hashSeed(value) {
+    let hash = 2166136261;
+    const text = String(value || "");
+    for (let i = 0; i < text.length; i += 1) {
+      hash ^= text.charCodeAt(i);
+      hash = Math.imul(hash, 16777619);
+    }
+    return hash >>> 0;
+  }
+
+  function seededRandom(seedText) {
+    let seed = hashSeed(seedText);
+    return () => {
+      seed += 0x6D2B79F5;
+      let value = seed;
+      value = Math.imul(value ^ (value >>> 15), value | 1);
+      value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+      return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function playerIndexForSeat(seatIndex) {
+    if (!state || !state.onlineRoom) return seatIndex === 0 ? human : bot;
+    return state.onlineRoom.localSeat === seatIndex ? human : bot;
+  }
+
+  function dealOnlineSlots(deck) {
+    const seatSlots = [];
+    [0, 1].forEach((seatIndex) => {
+      const playerIndex = playerIndexForSeat(seatIndex);
+      seatSlots[seatIndex] = dealSlots(deck, state.players[playerIndex].targetSize);
+    });
+    state.players[human].slots = seatSlots[state.onlineRoom.localSeat];
+    state.players[bot].slots = seatSlots[state.onlineRoom.opponentSeat];
   }
 
   function shuffleInPlace(items) {
@@ -749,8 +1836,9 @@
     const top = state.discard.pop();
     state.deck = state.discard;
     state.discard = [top];
+    const random = state.online ? seededRandom(onlineRoundSeed(`recycle:${state.recycleCount += 1}`)) : Math.random;
     for (let i = state.deck.length - 1; i > 0; i -= 1) {
-      const j = Math.floor(Math.random() * (i + 1));
+      const j = Math.floor(random() * (i + 1));
       [state.deck[i], state.deck[j]] = [state.deck[j], state.deck[i]];
     }
   }
@@ -821,7 +1909,7 @@
     drawFrom("discard", els.discardPile.getBoundingClientRect(), human);
   }
 
-  function drawFrom(source, sourceRect, playerIndex) {
+  function drawFrom(source, sourceRect, playerIndex, broadcast = true) {
     const drawn = source === "discard" ? state.discard.pop() : drawDeckCard();
     state.held = drawn;
     state.phase = "place";
@@ -831,6 +1919,9 @@
     render();
     animateCard(drawn, sourceRect, currentRect(), "draw");
     playSfx("draw");
+    if (broadcast && state.online && playerIndex === human) {
+      sendOnlineAction("draw", { source });
+    }
   }
 
   function afterDraw(playerIndex, shouldRender = true) {
@@ -846,7 +1937,7 @@
     if (shouldRender) render();
   }
 
-  function placeHeld(index, sourceRectOverride = null, playerIndex = human) {
+  function placeHeld(index, sourceRectOverride = null, playerIndex = human, broadcast = true) {
     if (!canPlaceHeldFor(playerIndex, index)) return false;
 
     const sourceRect = sourceRectOverride || currentRect();
@@ -866,6 +1957,9 @@
     state.players[playerIndex].maxChain = Math.max(state.players[playerIndex].maxChain, state.turnPlacements);
 
     if (checkWinner(playerIndex)) {
+      if (broadcast && state.online && playerIndex === human) {
+        sendOnlineAction("place", { index });
+      }
       endRound(playerIndex);
       return true;
     }
@@ -881,11 +1975,20 @@
     animateCard(placed, sourceRect, targetRect, "place");
     bumpElement(els.currentCard);
     playSfx("place");
+    if (broadcast && state.online && playerIndex === human) {
+      sendOnlineAction("place", { index });
+    }
     return true;
   }
 
   function trashHeld() {
     if (state.over || state.turn !== human || state.phase !== "place" || !state.held) return;
+    if (state.online) {
+      discardHeld(human, currentRect(), els.discardPile.getBoundingClientRect());
+      sendOnlineAction("discard");
+      finishOnlineTurn(human);
+      return;
+    }
     discardHeld(human, currentRect(), els.discardPile.getBoundingClientRect());
     state.phase = "waiting";
     setStatus("Bot is playing...");
@@ -903,6 +2006,19 @@
     animateCard(trashed, sourceRect, targetRect, "trash");
     bumpElement(els.discardPile);
     playSfx("discard");
+  }
+
+  function finishOnlineTurn(playerIndex) {
+    if (!state || !state.online || state.over) return;
+    const next = playerIndex === human ? bot : human;
+    state.turn = next;
+    state.phase = "draw";
+    state.drawSource = null;
+    state.turnPlacements = 0;
+    setStatus(next === human
+      ? "Your turn. Draw a card, then drag it to a slot or discard."
+      : `${state.players[bot].name}'s turn. Waiting for their move.`);
+    render();
   }
 
   function runBotTurn() {
@@ -1135,7 +2251,7 @@
     state.phase = "over";
     state.held = null;
     const loser = winner === human ? bot : human;
-    const winnerName = winner === human ? "You" : "Bot";
+    const winnerName = winner === human ? "You" : state.players[winner].name;
     const winnerWasBehind = state.players[winner].targetSize > state.players[loser].targetSize;
     const matchWon = state.players[winner].targetSize === 1;
     const rewards = isCrownMode() ? awardCoins(winner, winnerWasBehind) : [];
@@ -1143,6 +2259,7 @@
     render();
 
     if (matchWon) {
+      submitMatchResult(winner);
       showRoundModal(
         `${winnerName} won the match.`,
         `${winnerName} cleared the final 1-card board.`,
@@ -1155,7 +2272,7 @@
     }
 
     state.players[winner].targetSize -= 1;
-    const summary = `${winnerName} won the round. ${winnerName === "You" ? "Your" : "Bot's"} next board is ${state.players[winner].targetSize} cards.`;
+    const summary = `${winnerName} won the round. ${winner === human ? "Your" : `${winnerName}'s`} next board is ${state.players[winner].targetSize} cards.`;
 
     if (isCrownMode()) {
       if (state.players[winner].items.length >= 2) {
@@ -1163,7 +2280,7 @@
           showForcedDiscard();
         } else {
           const removed = botDiscardWeakestItem();
-          showShop(`Bot discarded ${ITEMS[removed].name} after winning with two items.`);
+          showShop(`${state.players[bot].name} discarded ${ITEMS[removed].name} after winning with two items.`);
         }
       } else {
         showShop(summary);
@@ -1542,6 +2659,10 @@
   }
 
   function hideAllModals() {
+    els.playModal.classList.add("hidden");
+    els.leaderboardModal.classList.add("hidden");
+    els.settingsModal.classList.add("hidden");
+    els.authModal.classList.add("hidden");
     els.helpModal.classList.add("hidden");
     els.releaseModal.classList.add("hidden");
     els.roundModal.classList.add("hidden");
@@ -1550,10 +2671,12 @@
   }
 
   function showHelp() {
+    hideAllModals();
     els.helpModal.classList.remove("hidden");
   }
 
   function showReleases() {
+    hideAllModals();
     els.releaseModal.classList.remove("hidden");
     if (!releasesLoaded) {
       releasesLoaded = true;
@@ -1561,16 +2684,8 @@
     }
   }
 
-  async function loadReleases() {
-    renderReleaseStatus("Loading recent releases...");
-    try {
-      const response = await fetch(RELEASES_URL, { headers: { Accept: "application/vnd.github+json" } });
-      if (!response.ok) throw new Error(`Release request failed with ${response.status}`);
-      const releases = await response.json();
-      renderReleases(Array.isArray(releases) && releases.length ? releases : RELEASE_FALLBACKS);
-    } catch (error) {
-      renderReleases(RELEASE_FALLBACKS, "Showing built-in release notes. Live GitHub releases could not be loaded.");
-    }
+  function loadReleases() {
+    renderReleases(RELEASE_FALLBACKS);
   }
 
   function renderReleaseStatus(message) {
@@ -1622,16 +2737,6 @@
     renderReleaseBody(body, release.body || "No release notes yet.", release.name || release.tag_name);
     item.appendChild(body);
 
-    if (release.html_url) {
-      const link = document.createElement("a");
-      link.className = "release-link";
-      link.href = release.html_url;
-      link.target = "_blank";
-      link.rel = "noopener";
-      link.textContent = "View on GitHub";
-      item.appendChild(link);
-    }
-
     return item;
   }
 
@@ -1681,6 +2786,8 @@
   }
 
   function showModeSelect() {
+    if (state && state.online) closeRoomSocket();
+    state = null;
     hideAllModals();
     els.gameShell.classList.add("hidden");
     els.modeScreen.classList.remove("hidden");
@@ -1849,7 +2956,7 @@
     button.disabled = owner !== human || (!playable && !itemSelectable);
     button.dataset.slotIndex = String(index);
     if (owner === human) button.dataset.dragTarget = "slot";
-    button.setAttribute("aria-label", `${owner === human ? "Your" : "Bot"} slot ${index + 1}`);
+    button.setAttribute("aria-label", `${owner === human ? "Your" : state.players[owner].name} slot ${index + 1}`);
     button.addEventListener("click", () => {
       if (handleItemSlot(index)) return;
       placeHeld(index);
@@ -1973,6 +3080,7 @@
       fallback: () => drawFrom(source, sourceElement.getBoundingClientRect(), human),
       commit: (target) => {
         if (source === "discard" && target.type === "slot" && target.valid) {
+          if (state.online) sendOnlineAction("draw", { source: "discard" });
           state.held = state.discard.pop();
           state.phase = "place";
           state.drawSource = "discard";
@@ -2022,8 +3130,12 @@
       pointerId: config.event.pointerId,
       startX: config.event.clientX,
       startY: config.event.clientY,
+      lastX: config.event.clientX,
+      lastY: config.event.clientY,
+      raf: 0,
       moved: false,
       hotElement: null,
+      dropRects: readDropRects(),
       ghost: makeDragGhost(config)
     };
     drag.sourceElement.classList.add("dragging-source");
@@ -2051,14 +3163,22 @@
     event.preventDefault();
     const movedDistance = Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY);
     drag.moved = drag.moved || movedDistance > 7;
-    moveDragGhost(event.clientX, event.clientY);
-    updateDropHighlight(dropTargetAt(event.clientX, event.clientY));
+    drag.lastX = event.clientX;
+    drag.lastY = event.clientY;
+
+    if (!drag.raf) {
+      drag.raf = window.requestAnimationFrame(() => {
+        if (!drag) return;
+        drag.raf = 0;
+        moveDragGhost(drag.lastX, drag.lastY);
+        updateDropHighlight(dropTargetAt(drag.lastX, drag.lastY));
+      });
+    }
   }
 
   function moveDragGhost(x, y) {
     if (!drag) return;
-    drag.ghost.style.left = `${x}px`;
-    drag.ghost.style.top = `${y}px`;
+    drag.ghost.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%) rotate(-3deg) scale(1.04)`;
   }
 
   function endDrag(event) {
@@ -2087,6 +3207,7 @@
 
   function cleanupDrag() {
     if (!drag) return;
+    if (drag.raf) window.cancelAnimationFrame(drag.raf);
     drag.sourceElement.classList.remove("dragging-source");
     updateDropHighlight(null);
     drag.ghost.remove();
@@ -2107,32 +3228,41 @@
 
   function dropTargetAt(x, y) {
     if (!drag) return { type: "none", valid: false, element: null };
+    const rects = drag.dropRects || readDropRects();
 
     if (drag.mode === "draw") {
       if (drag.source === "discard") {
-        const slots = Array.from(els.humanGrid.children);
         const preview = state.discard[state.discard.length - 1];
-        for (let i = 0; i < slots.length; i += 1) {
-          if (!rectContains(slots[i].getBoundingClientRect(), x, y)) continue;
+        for (let i = 0; i < rects.slots.length; i += 1) {
+          if (!rectContains(rects.slots[i].rect, x, y)) continue;
           const valid = preview && preview.value === i + 1 && isPlayable(preview, human);
-          return { type: "slot", index: i, valid, element: valid ? slots[i] : null };
+          return { type: "slot", index: i, valid, element: valid ? rects.slots[i].element : null };
         }
       }
       return { type: "draw", valid: true, element: null };
     }
 
-    if (rectContains(els.discardPile.getBoundingClientRect(), x, y)) {
+    if (rectContains(rects.discard, x, y)) {
       return { type: "discard", valid: true, element: els.discardPile };
     }
 
-    const slots = Array.from(els.humanGrid.children);
-    for (let i = 0; i < slots.length; i += 1) {
-      if (!rectContains(slots[i].getBoundingClientRect(), x, y)) continue;
+    for (let i = 0; i < rects.slots.length; i += 1) {
+      if (!rectContains(rects.slots[i].rect, x, y)) continue;
       const valid = state.held && state.held.value === i + 1 && isPlayable(state.held, human);
-      return { type: "slot", index: i, valid, element: valid ? slots[i] : null };
+      return { type: "slot", index: i, valid, element: valid ? rects.slots[i].element : null };
     }
 
     return { type: "none", valid: false, element: null };
+  }
+
+  function readDropRects() {
+    return {
+      discard: els.discardPile.getBoundingClientRect(),
+      slots: Array.from(els.humanGrid.children).map((element) => ({
+        element,
+        rect: element.getBoundingClientRect()
+      }))
+    };
   }
 
   function rectContains(rect, x, y) {
@@ -2144,6 +3274,8 @@
     const crownMode = isCrownMode();
     els.modeName.textContent = gameTitle();
     els.coinStrip.hidden = !crownMode;
+    if (els.humanName) els.humanName.textContent = state.players[human].name || "You";
+    if (els.botName) els.botName.textContent = state.players[bot].name || "Bot";
     document.body.classList.toggle("crown-mode", crownMode);
     document.body.classList.toggle("classic-mode", !crownMode);
     renderGrid(els.humanGrid, human);
@@ -2160,7 +3292,7 @@
       els.botTurnText.textContent = checkWinner(bot) ? "Won" : "Done";
       document.body.classList.remove("bot-turn");
     } else {
-      els.turnPill.textContent = state.turn === human && state.phase !== "waiting" ? "Your turn" : "Bot turn";
+      els.turnPill.textContent = state.turn === human && state.phase !== "waiting" ? "Your turn" : `${state.players[bot].name || "Bot"} turn`;
       els.humanTurnText.textContent = state.turn === human && state.phase !== "waiting" ? (state.phase === "draw" ? "Draw" : "Place") : "Waiting";
       els.botTurnText.textContent = state.turn === bot || state.phase === "waiting" ? "Playing" : "Waiting";
       document.body.classList.toggle("bot-turn", state.turn === bot || state.phase === "waiting");
@@ -2185,14 +3317,71 @@
     grid.replaceChildren(...state.players[playerIndex].slots.map((slot, index) => renderCard(slot, index, playerIndex)));
   }
 
-  document.querySelectorAll("[data-mode]").forEach((button) => {
-    button.addEventListener("click", () => startMatch(button.dataset.mode));
+  enablePerformanceMode();
+  loadSavedAuth();
+  renderServerStatus();
+  checkServerStatus();
+  window.setInterval(checkServerStatus, 60000);
+
+  els.menuModeButtons.forEach((button) => {
+    button.addEventListener("click", () => showPlayMenu(button.dataset.menuMode));
   });
+  document.querySelectorAll("[data-play-type]").forEach((button) => {
+    button.addEventListener("click", () => choosePlayType(button.dataset.playType));
+  });
+  document.querySelectorAll("[data-start-mode]").forEach((button) => {
+    button.addEventListener("click", () => startSelectedMode(button.dataset.startMode));
+  });
+  els.playBack.addEventListener("click", () => renderPlayMenu("type"));
+  els.closePlay.addEventListener("click", () => els.playModal.classList.add("hidden"));
+  els.playChosenButton.addEventListener("click", () => startSelectedMode(selectedMenuMode));
+  els.onlineAuthButton.addEventListener("click", showAuth);
+  els.createRoomButton.addEventListener("click", createOnlineRoom);
+  els.joinRoomButton.addEventListener("click", joinOnlineRoom);
+  els.roomReadyButton.addEventListener("click", toggleRoomReady);
+  els.roomLeaveButton.addEventListener("click", () => closeRoomSocket());
+  els.joinRoomCode.addEventListener("input", () => {
+    els.joinRoomCode.value = normalizeRoomCode(els.joinRoomCode.value);
+  });
+  els.joinRoomCode.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      joinOnlineRoom();
+    }
+  });
+  els.leaderboardButton.addEventListener("click", showLeaderboard);
+  els.leaderboardTabs.forEach((button) => {
+    button.addEventListener("click", () => loadLeaderboard(button.dataset.leaderboardMode));
+  });
+  els.closeLeaderboard.addEventListener("click", () => els.leaderboardModal.classList.add("hidden"));
+  els.settingsButton.addEventListener("click", showSettings);
+  els.settingsMusic.addEventListener("click", () => {
+    toggleMusic();
+    renderSettings();
+  });
+  els.settingsSfx.addEventListener("click", () => {
+    toggleSfx();
+    renderSettings();
+  });
+  els.settingsFullscreen.addEventListener("click", () => {
+    toggleFullscreen();
+    renderSettings();
+  });
+  if (els.settingsPerformance) els.settingsPerformance.addEventListener("click", cyclePerformanceMode);
+  els.closeSettings.addEventListener("click", () => els.settingsModal.classList.add("hidden"));
 
   els.modeFullscreen.addEventListener("click", toggleFullscreen);
   els.fullscreenButton.addEventListener("click", toggleFullscreen);
   els.musicButton.addEventListener("click", toggleMusic);
   els.sfxButton.addEventListener("click", toggleSfx);
+  els.serverStatusButton.addEventListener("click", checkServerStatus);
+  if (els.accountButton) els.accountButton.addEventListener("click", showAuth);
+  els.authForm.addEventListener("submit", handleAuthSubmit);
+  els.authLoginTab.addEventListener("click", () => setAuthMode("login"));
+  els.authSignupTab.addEventListener("click", () => setAuthMode("signup"));
+  if (els.authRefresh) els.authRefresh.addEventListener("click", () => refreshAuthProfile(false));
+  els.authLogout.addEventListener("click", logoutAuth);
+  els.closeAuth.addEventListener("click", () => els.authModal.classList.add("hidden"));
   els.helpButton.addEventListener("click", showHelp);
   els.closeHelp.addEventListener("click", () => els.helpModal.classList.add("hidden"));
   els.releaseButtons.forEach((button) => button.addEventListener("click", showReleases));
@@ -2217,7 +3406,7 @@
     if (modalAction) modalAction();
   });
   els.nextRound.addEventListener("click", () => {
-    botShop();
+    if (!state.online) botShop();
     state.pendingPurchase = null;
     state.shopOffers = [];
     continueToNextRound();
@@ -2227,6 +3416,9 @@
   });
 
   window.addEventListener("resize", setAppHeight);
+  window.addEventListener("resize", enablePerformanceMode);
+  window.addEventListener("online", checkServerStatus);
+  window.addEventListener("offline", checkServerStatus);
   window.addEventListener("orientationchange", () => window.setTimeout(setAppHeight, 120));
   if (window.visualViewport) {
     window.visualViewport.addEventListener("resize", setAppHeight);
